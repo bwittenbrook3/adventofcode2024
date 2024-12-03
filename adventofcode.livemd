@@ -1,0 +1,61 @@
+# Advent of Code 2024
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.14.2"}
+])
+```
+
+## Day 1
+
+```elixir
+day1_input_file = Kino.Input.file("input.txt")
+```
+
+```elixir
+input_data = 
+  day1_input_file
+  |>Kino.Input.read() 
+  |> Map.fetch!(:file_ref)
+  |> Kino.Input.file_path()
+  |> File.read!()
+
+# Part 1
+
+{left_list, right_list} = 
+  input_data
+  |> String.split("\n")
+  |> Enum.reduce({[], []}, fn pair, {left_list, right_list} -> 
+    case String.split(pair, "   ") do 
+      [left, right] -> 
+          {left, ""} = Integer.parse(left)
+          {right, ""} = Integer.parse(right)
+          {left_list ++ [left], right_list ++ [right]}
+      _ -> {left_list, right_list}
+    end 
+  end)
+
+left_list = Enum.sort(left_list)
+right_list = Enum.sort(right_list)
+
+{total_distance, _} = 
+  Enum.reduce(left_list, {0, right_list}, fn 
+    left, {distance, [right | rest_right]} -> 
+      {distance + abs(left - right), rest_right}
+  end)
+
+total_distance
+
+```
+
+```elixir
+# part 2 
+
+right_list_map = Enum.frequencies(right_list)
+
+Enum.reduce(left_list, 0, fn item, accu -> 
+   accu + (item * Map.get(right_list_map, item, 0))
+end)
+```
+
+## Section
